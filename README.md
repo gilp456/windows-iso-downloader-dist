@@ -50,4 +50,4 @@ uninstall-windows-iso-downloader -PurgeSettings
 
 ## Status
 
-Version `0.5.0` is a preview release. The public repository contains only distribution files; development occurs in a separate private repository.
+Version `0.5.1` is a preview release. The public repository contains only distribution files; development occurs in a separate private repository.

@@ -48,7 +48,7 @@ function Invoke-WidDownload {
         $request.AllowAutoRedirect=$false
         $request.Timeout=30000
         $request.ReadWriteTimeout=30000
-        $request.UserAgent='WindowsIsoDownloader/0.5.0'
+        $request.UserAgent='WindowsIsoDownloader/0.5.1'
         try{
             $response=$request.GetResponse()
             try{
@@ -171,7 +171,9 @@ exit `$LASTEXITCODE
 `$state=Get-Content -LiteralPath (Join-Path `$root 'state\current.json') -Raw|ConvertFrom-Json
 `$entry=Join-Path `$root ('versions\'+[string]`$state.CurrentVersion+'\scripts\Uninstall-WindowsIsoDownloader.ps1')
 if(-not(Test-Path -LiteralPath `$entry -PathType Leaf)){throw "Windows ISO Downloader uninstaller is missing: `$entry"}
-& '$escapedPowerShell' -NoLogo -NoProfile -STA -File `$entry -InstallRoot `$root @args
+`$parentProcessId=(Get-CimInstance Win32_Process -Filter "ProcessId=`$PID").ParentProcessId
+if(-not `$parentProcessId){throw 'The uninstaller could not resolve its calling CMD process.'}
+& '$escapedPowerShell' -NoLogo -NoProfile -STA -File `$entry -InstallRoot `$root -DeferBinCleanup -CleanupAfterProcessId `$parentProcessId @args
 exit `$LASTEXITCODE
 "@
     Write-WidFileAtomically -Path (Join-Path $bin '_get-windows-iso.ps1') -Content $launcher
@@ -277,10 +279,10 @@ function Start-WidDownloader {
 function Invoke-WidBootstrap {
     [CmdletBinding()]
     param([string]$SaveDirectory,[switch]$InstallOnly,[string]$PackagePath,[switch]$SkipPathUpdate)
-    $version='0.5.0'
-    $uri=[uri]'https://github.com/gilp456/windows-iso-downloader-dist/releases/download/v0.5.0/WindowsIsoDownloader-0.5.0.zip'
-    $length=[int64]37701
-    $sha256='13F32AA2E1AB4DFEB22541EB4C65CE76D02C8072996D28D4F214E5256813589D'
+    $version='0.5.1'
+    $uri=[uri]'https://github.com/gilp456/windows-iso-downloader-dist/releases/download/v0.5.1/WindowsIsoDownloader-0.5.1.zip'
+    $length=[int64]38327
+    $sha256='6E5E8F19CC80268408D1D2561383E2959A61BC9BF77519D8141FB57C10AAABEA'
     $root=Get-WidDefaultInstallRoot
     $downloadRoot=Join-Path $root ('staging\download-'+[guid]::NewGuid().Guid)
     $archive=$PackagePath
