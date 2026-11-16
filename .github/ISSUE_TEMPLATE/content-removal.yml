@@ -1,0 +1,46 @@
+name: Content or link removal request
+description: Report a catalog link, metadata record, trademark concern, or private-information concern.
+title: "[Removal request] "
+labels:
+  - content-review
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue will be public. Do not post private documents, credentials, personal identifiers, or confidential legal correspondence. For a formal copyright, trademark, or private-information request, use GitHub's official content-removal process linked in CONTENT_REMOVAL.md.
+  - type: input
+    id: affected_item
+    attributes:
+      label: Affected item
+      description: Provide the exact repository path, catalog record, URL, filename, or release artifact.
+      placeholder: https://github.com/gilp456/windows-iso-downloader-dist/...
+    validations:
+      required: true
+  - type: textarea
+    id: concern
+    attributes:
+      label: Concern
+      description: Explain the factual basis for the requested correction, disabling, or removal.
+    validations:
+      required: true
+  - type: textarea
+    id: authority
+    attributes:
+      label: Relationship to the material
+      description: State whether you are the rights holder, an authorized representative, a provider, or another affected party.
+    validations:
+      required: true
+  - type: textarea
+    id: requested_action
+    attributes:
+      label: Requested action
+      description: Describe the specific correction, link disabling, or removal requested.
+    validations:
+      required: true
+  - type: checkboxes
+    id: public_acknowledgement
+    attributes:
+      label: Public issue acknowledgement
+      options:
+        - label: I understand this issue and its attachments are public and contain no confidential or private information.
+          required: true

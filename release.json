@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "product": "Windows ISO Downloader",
-  "version": "0.5.1",
-  "archive": "WindowsIsoDownloader-0.5.1.zip",
-  "archiveUrl": "https://github.com/gilp456/windows-iso-downloader-dist/releases/download/v0.5.1/WindowsIsoDownloader-0.5.1.zip",
-  "length": 38327,
-  "sha256": "6E5E8F19CC80268408D1D2561383E2959A61BC9BF77519D8141FB57C10AAABEA"
+  "version": "0.5.2",
+  "archive": "WindowsIsoDownloader-0.5.2.zip",
+  "archiveUrl": "https://github.com/gilp456/windows-iso-downloader-dist/releases/download/v0.5.2/WindowsIsoDownloader-0.5.2.zip",
+  "length": 54971,
+  "sha256": "4CA7E6C410E89C6A288636F1774700BC8659DF1F4EC33227579DEFCE7F92F076"
 }

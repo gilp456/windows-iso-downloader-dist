@@ -48,7 +48,7 @@ function Invoke-WidDownload {
         $request.AllowAutoRedirect=$false
         $request.Timeout=30000
         $request.ReadWriteTimeout=30000
-        $request.UserAgent='WindowsIsoDownloader/0.5.1'
+        $request.UserAgent='WindowsIsoDownloader/0.5.2'
         try{
             $response=$request.GetResponse()
             try{
@@ -279,10 +279,10 @@ function Start-WidDownloader {
 function Invoke-WidBootstrap {
     [CmdletBinding()]
     param([string]$SaveDirectory,[switch]$InstallOnly,[string]$PackagePath,[switch]$SkipPathUpdate)
-    $version='0.5.1'
-    $uri=[uri]'https://github.com/gilp456/windows-iso-downloader-dist/releases/download/v0.5.1/WindowsIsoDownloader-0.5.1.zip'
-    $length=[int64]38327
-    $sha256='6E5E8F19CC80268408D1D2561383E2959A61BC9BF77519D8141FB57C10AAABEA'
+    $version='0.5.2'
+    $uri=[uri]'https://github.com/gilp456/windows-iso-downloader-dist/releases/download/v0.5.2/WindowsIsoDownloader-0.5.2.zip'
+    $length=[int64]54971
+    $sha256='4CA7E6C410E89C6A288636F1774700BC8659DF1F4EC33227579DEFCE7F92F076'
     $root=Get-WidDefaultInstallRoot
     $downloadRoot=Join-Path $root ('staging\download-'+[guid]::NewGuid().Guid)
     $archive=$PackagePath
