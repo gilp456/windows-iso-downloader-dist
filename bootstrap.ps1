@@ -2,7 +2,8 @@
 param(
     [Alias('IsoRoot')][string]$SaveDirectory,
     [switch]$InstallOnly,
-    [string]$PackagePath
+    [string]$PackagePath,
+    [switch]$SkipPathUpdate
 )
 
 $ErrorActionPreference='Stop'
@@ -259,7 +260,7 @@ function Start-WidDownloader {
 
 function Invoke-WidBootstrap {
     [CmdletBinding()]
-    param([string]$SaveDirectory,[switch]$InstallOnly,[string]$PackagePath)
+    param([string]$SaveDirectory,[switch]$InstallOnly,[string]$PackagePath,[switch]$SkipPathUpdate)
     $version='0.5.0'
     $uri=[uri]'https://github.com/gilp456/windows-iso-downloader-dist/releases/download/v0.5.0/WindowsIsoDownloader-0.5.0.zip'
     $length=[int64]37701
@@ -276,7 +277,7 @@ function Invoke-WidBootstrap {
             [void](Invoke-WidDownload -Uri $uri -Destination $archive)
         }
         Write-Host "Verifying SHA-256: $sha256"
-        $result=Install-WidPackageFromArchive -ArchivePath $archive -ExpectedLength $length -ExpectedSha256 $sha256 -Version $version -InstallRoot $root
+        $result=Install-WidPackageFromArchive -ArchivePath $archive -ExpectedLength $length -ExpectedSha256 $sha256 -Version $version -InstallRoot $root -SkipPathUpdate:$SkipPathUpdate
         Write-Host "Installed Windows ISO Downloader $version"
         Write-Host "Install location: $($result.InstallRoot)"
         Write-Host 'Command: get-windows-iso'
@@ -286,6 +287,6 @@ function Invoke-WidBootstrap {
 }
 
 if(-not $script:WindowsIsoDownloaderBootstrapNoRun){
-    Invoke-WidBootstrap -SaveDirectory $SaveDirectory -InstallOnly:$InstallOnly -PackagePath $PackagePath
+    Invoke-WidBootstrap -SaveDirectory $SaveDirectory -InstallOnly:$InstallOnly -PackagePath $PackagePath -SkipPathUpdate:$SkipPathUpdate
 }
 
