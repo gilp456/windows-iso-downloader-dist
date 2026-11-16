@@ -1,12 +1,12 @@
 # Legal notice
 
-Windows ISO Downloader is an independent, unofficial utility. It is not affiliated with, sponsored by, approved by, or endorsed by Microsoft Corporation, Massgrave, Internet Archive, NTriver, or any download provider.
+Windows ISO Downloader is an independent, unofficial utility. It is not affiliated with, sponsored by, approved by, or endorsed by Microsoft Corporation, Massgravel, Internet Archive, NTriver, or any download provider.
 
 ## Installation media and licensing
 
 The project repository and release packages contain downloader code and metadata only. They do not host, sell, sublicense, proxy, or redistribute Microsoft installation-media payloads. When a user requests media, the utility discloses the selected provider and downloads the selected file directly from that provider to storage controlled by the user.
 
-Downloading installation media does not grant a license to install, activate, or use Microsoft Windows, Microsoft Office, or any other software. Users are responsible for obtaining appropriate licenses and for complying with the applicable Microsoft Software License Terms, provider terms, and law.
+Downloading installation media does not grant a license to install, activate, or use Microsoft Windows, Microsoft Office, or any other software. Users are responsible for obtaining appropriate licenses and for complying with the applicable [Microsoft Software License Terms](https://www.microsoft.com/en-us/useterms), provider terms, and law.
 
 The utility contains no Windows or Office activation function, product key, license bypass, or digital-rights-management circumvention function.
 
@@ -18,7 +18,7 @@ Filename, byte-length, and cryptographic-hash checks establish file identity and
 
 ## Trademarks
 
-Microsoft, Windows, Office, and related names are trademarks of the Microsoft group of companies. They are used only to identify the products and media with which this independent utility interoperates. No Microsoft logo, Windows logo, product icon, or other Microsoft graphical brand asset is licensed to or distributed by this project. All other trademarks are the property of their respective owners.
+Microsoft, Windows, Office, and related names are trademarks of the Microsoft group of companies. They are used only to identify the products and media with which this independent utility interoperates. No Microsoft logo, Windows logo, product icon, or other Microsoft graphical brand asset is licensed to or distributed by this project. Microsoft's published [trademark and brand guidance](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks) applies. All other trademarks are the property of their respective owners.
 
 ## Warranty and liability
 

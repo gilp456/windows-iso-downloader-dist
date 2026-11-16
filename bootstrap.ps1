@@ -281,8 +281,8 @@ function Invoke-WidBootstrap {
     param([string]$SaveDirectory,[switch]$InstallOnly,[string]$PackagePath,[switch]$SkipPathUpdate)
     $version='0.5.2'
     $uri=[uri]'https://github.com/gilp456/windows-iso-downloader-dist/releases/download/v0.5.2/WindowsIsoDownloader-0.5.2.zip'
-    $length=[int64]54971
-    $sha256='4CA7E6C410E89C6A288636F1774700BC8659DF1F4EC33227579DEFCE7F92F076'
+    $length=[int64]55074
+    $sha256='0DD665E1C0A333B3DD8CE4BAA47C373A39443C3A43E095F925FD4C36D9B92EB7'
     $root=Get-WidDefaultInstallRoot
     $downloadRoot=Join-Path $root ('staging\download-'+[guid]::NewGuid().Guid)
     $archive=$PackagePath
