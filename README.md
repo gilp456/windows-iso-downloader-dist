@@ -10,7 +10,7 @@ Open Windows PowerShell or PowerShell and run:
 irm https://gilp456.github.io/windows-iso-downloader-dist/bootstrap.ps1 | iex
 ```
 
-The bootstrap installs the current release for your Windows account, adds `get-windows-iso` to your user PATH, and launches the downloader. Administrator access is not required.
+The bootstrap installs the current release for your Windows account, adds `get-windows-iso` to your user PATH, and launches the downloader. Administrator access is not required. The command wrapper uses a process-only execution-policy bypass for the verified installed files; it does not change Windows execution-policy settings.
 
 To install without launching the menu:
 

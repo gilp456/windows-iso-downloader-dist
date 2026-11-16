@@ -6,6 +6,16 @@ param(
     [switch]$SkipPathUpdate
 )
 
+$widBootstrapBody={
+[CmdletBinding()]
+param(
+    [string]$SaveDirectory,
+    [switch]$InstallOnly,
+    [string]$PackagePath,
+    [switch]$SkipPathUpdate,
+    [switch]$NoRun
+)
+
 $ErrorActionPreference='Stop'
 
 function Get-WidDefaultInstallRoot {
@@ -164,10 +174,10 @@ if(-not(Test-Path -LiteralPath `$entry -PathType Leaf)){throw "Windows ISO Downl
 & '$escapedPowerShell' -NoLogo -NoProfile -STA -File `$entry -InstallRoot `$root @args
 exit `$LASTEXITCODE
 "@
-    Write-WidFileAtomically -Path (Join-Path $bin 'get-windows-iso.ps1') -Content $launcher
-    Write-WidFileAtomically -Path (Join-Path $bin 'uninstall-windows-iso-downloader.ps1') -Content $uninstall
-    Write-WidFileAtomically -Path (Join-Path $bin 'get-windows-iso.cmd') -Content "@echo off`r`npowershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File ""%~dp0get-windows-iso.ps1"" %*" -Encoding ASCII
-    Write-WidFileAtomically -Path (Join-Path $bin 'uninstall-windows-iso-downloader.cmd') -Content "@echo off`r`npowershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File ""%~dp0uninstall-windows-iso-downloader.ps1"" %*" -Encoding ASCII
+    Write-WidFileAtomically -Path (Join-Path $bin '_get-windows-iso.ps1') -Content $launcher
+    Write-WidFileAtomically -Path (Join-Path $bin '_uninstall-windows-iso-downloader.ps1') -Content $uninstall
+    Write-WidFileAtomically -Path (Join-Path $bin 'get-windows-iso.cmd') -Content "@echo off`r`npowershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File ""%~dp0_get-windows-iso.ps1"" %*" -Encoding ASCII
+    Write-WidFileAtomically -Path (Join-Path $bin 'uninstall-windows-iso-downloader.cmd') -Content "@echo off`r`npowershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File ""%~dp0_uninstall-windows-iso-downloader.ps1"" %*" -Encoding ASCII
     $bin
 }
 
@@ -191,7 +201,9 @@ function Install-WidPackageFromArchive {
         [Parameter(Mandatory)][ValidatePattern('^[A-Fa-f0-9]{64}$')][string]$ExpectedSha256,
         [Parameter(Mandatory)][string]$Version,
         [Parameter(Mandatory)][string]$InstallRoot,
-        [switch]$SkipPathUpdate
+        [switch]$SkipPathUpdate,
+        [switch]$SimulateFailureBeforeActivation,
+        [switch]$SimulateRollbackRestoreFailure
     )
     $archive=[IO.Path]::GetFullPath($ArchivePath)
     if(-not(Test-Path -LiteralPath $archive -PathType Leaf)){throw "Release archive was not found: $archive"}
@@ -229,6 +241,7 @@ function Install-WidPackageFromArchive {
         if($oldState){
             if([string]$oldState.CurrentVersion -and [string]$oldState.CurrentVersion -ne $Version){$previous=[string]$oldState.CurrentVersion}else{$previous=[string]$oldState.PreviousVersion}
         }
+        if($SimulateFailureBeforeActivation){throw 'Simulated failure before version activation.'}
         $state=[pscustomobject][ordered]@{SchemaVersion=1;CurrentVersion=$Version;PreviousVersion=$previous;InstalledAtUtc=[DateTime]::UtcNow.ToString('o')}
         Write-WidFileAtomically -Path $statePath -Content ($state|ConvertTo-Json -Depth 4)
         if(-not $SkipPathUpdate){try{Add-WidUserPath -Directory $bin}catch{Write-Warning "The command was installed but the current-user PATH could not be updated: $($_.Exception.Message)"}}
@@ -237,6 +250,7 @@ function Install-WidPackageFromArchive {
     }catch{
         if($movedNew -and $backup -and (Test-Path -LiteralPath $backup)){
             Remove-Item -LiteralPath $versionRoot -Recurse -Force -ErrorAction SilentlyContinue
+            if($SimulateRollbackRestoreFailure){throw "Simulated rollback restore failure. Backup preserved at '$backup'."}
             Move-Item -LiteralPath $backup -Destination $versionRoot
             $backup=$null
         }elseif($movedNew -and (Test-Path -LiteralPath $versionRoot)){
@@ -245,17 +259,19 @@ function Install-WidPackageFromArchive {
         throw
     }finally{
         if(Test-Path -LiteralPath $stage){Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue}
-        if($backup -and (Test-Path -LiteralPath $backup)){Remove-Item -LiteralPath $backup -Recurse -Force -ErrorAction SilentlyContinue}
+        if($backup -and (Test-Path -LiteralPath $backup)){Write-Warning "Rollback backup preserved at: $backup"}
     }
 }
 
 function Start-WidDownloader {
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$InstallRoot,[string]$SaveDirectory)
-    $launcher=Join-Path $InstallRoot 'bin\get-windows-iso.ps1'
+    $state=Get-Content -LiteralPath (Join-Path $InstallRoot 'state\current.json') -Raw|ConvertFrom-Json
+    $entry=Join-Path $InstallRoot ('versions\'+[string]$state.CurrentVersion+'\scripts\Get-MassgraveMedia.ps1')
+    if(-not(Test-Path -LiteralPath $entry -PathType Leaf)){throw "Active Windows ISO Downloader entry point is missing: $entry"}
     $arguments=@()
     if(-not[string]::IsNullOrWhiteSpace($SaveDirectory)){$arguments=@('-SaveDirectory',$SaveDirectory)}
-    & (Get-WidWindowsPowerShell) -NoLogo -NoProfile -STA -File $launcher @arguments
+    & (Get-WidWindowsPowerShell) -NoLogo -NoProfile -ExecutionPolicy Bypass -STA -File $entry @arguments
 }
 
 function Invoke-WidBootstrap {
@@ -286,7 +302,16 @@ function Invoke-WidBootstrap {
     }finally{if(Test-Path -LiteralPath $downloadRoot){Remove-Item -LiteralPath $downloadRoot -Recurse -Force -ErrorAction SilentlyContinue}}
 }
 
-if(-not $script:WindowsIsoDownloaderBootstrapNoRun){
+if(-not $NoRun){
     Invoke-WidBootstrap -SaveDirectory $SaveDirectory -InstallOnly:$InstallOnly -PackagePath $PackagePath -SkipPathUpdate:$SkipPathUpdate
 }
+}
+
+$widNoRun=[bool]$script:WindowsIsoDownloaderBootstrapNoRun
+if($script:WindowsIsoDownloaderBootstrapExportFunctions){
+    . $widBootstrapBody -SaveDirectory $SaveDirectory -InstallOnly:$InstallOnly -PackagePath $PackagePath -SkipPathUpdate:$SkipPathUpdate -NoRun:$widNoRun
+}else{
+    & $widBootstrapBody -SaveDirectory $SaveDirectory -InstallOnly:$InstallOnly -PackagePath $PackagePath -SkipPathUpdate:$SkipPathUpdate -NoRun:$widNoRun
+}
+Remove-Variable widBootstrapBody,widNoRun -ErrorAction SilentlyContinue
 
